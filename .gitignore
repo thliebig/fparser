@@ -1,0 +1,10 @@
+*.o
+.cproject
+.project
+Makefile*
+*~
+*.so*
+object_script.*
+Thumbs.db
+qtc-*
+*.pro.user
