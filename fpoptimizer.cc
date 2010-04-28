@@ -8076,7 +8076,7 @@ namespace FPoptimizer_CodeTree
                     //if(imm >= 0.0)
                     {
                         double new_base_immed = fp_pow(base_immed, imm);
-                        if(isinf(new_base_immed) || new_base_immed == 0.0)
+			if(std::isinf(new_base_immed) || new_base_immed == 0.0)
                         {
                             // It produced an infinity. Do not change.
                             break;
@@ -8122,7 +8122,7 @@ namespace FPoptimizer_CodeTree
                     //if(imm >= 0.0)
                     {
                         double new_factor_immed = fp_pow(imm, exponent_immed);
-                        if(isinf(new_factor_immed) || new_factor_immed == 0.0)
+			if(std::isinf(new_factor_immed) || new_factor_immed == 0.0)
                         {
                             // It produced an infinity. Do not change.
                             break;
