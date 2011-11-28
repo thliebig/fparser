@@ -7,7 +7,7 @@ TEMPLATE = lib
 TARGET = 
 DEPENDPATH += .
 INCLUDEPATH += .
-VERSION = 4.0.5
+VERSION = 4.4.3
 
 # Input
 HEADERS += fparser.hh fpconfig.hh fptypes.hh

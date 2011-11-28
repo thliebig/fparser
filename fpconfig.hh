@@ -1,5 +1,5 @@
 /***************************************************************************\
-|* Function Parser for C++ v4.0.5                                          *|
+|* Function Parser for C++ v4.4.3                                          *|
 |*-------------------------------------------------------------------------*|
 |* Copyright: Juha Nieminen                                                *|
 |*                                                                         *|
@@ -30,6 +30,15 @@
 //#define FP_SUPPORT_LONG_INT_TYPE
 //#define FP_SUPPORT_MPFR_FLOAT_TYPE
 //#define FP_SUPPORT_GMP_INT_TYPE
+//#define FP_SUPPORT_COMPLEX_DOUBLE_TYPE
+//#define FP_SUPPORT_COMPLEX_FLOAT_TYPE
+//#define FP_SUPPORT_COMPLEX_LONG_DOUBLE_TYPE
+
+/* If you are using FunctionParser_ld or FunctionParser_cld and your compiler
+   supports the strtold() function, you should uncomment the following line.
+ */
+//#define FP_USE_STRTOLD
+
 
 /* Uncomment this line of define it in your compiler settings if you want
    to disable compiling the basic double version of the library, in case
@@ -105,6 +114,10 @@
 #define FP_SUPPORT_OPTIMIZER
 #endif
 
+#if defined(FP_SUPPORT_COMPLEX_DOUBLE_TYPE) || defined(FP_SUPPORT_COMPLEX_FLOAT_TYPE) || defined(FP_SUPPORT_COMPLEX_LONG_DOUBLE_TYPE)
+#define FP_SUPPORT_COMPLEX_NUMBERS
+#endif
+
 
 /*
  Epsilon value used with the comparison operators (must be non-negative):
@@ -130,13 +143,3 @@
  (Consult the documentation for details.)
  */
 //#define FP_NO_EVALUATION_CHECKS
-
-
-
-// Temporary settings while double is the only supported type by the optimizer
-#ifdef FP_DISABLE_DOUBLE_TYPE
-#ifndef FP_NO_SUPPORT_OPTIMIZER
-#define FP_NO_SUPPORT_OPTIMIZER
-#endif
-#undef FP_SUPPORT_OPTIMIZER
-#endif

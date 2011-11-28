@@ -143,6 +143,21 @@ GmpInt::GmpInt(long value)
     }
 }
 
+GmpInt::GmpInt(unsigned long value)
+{
+    if(value == 0)
+    {
+        mData = gmpIntDataContainer().const_0();
+        ++(mData->mRefCount);
+    }
+    else
+    {
+        mData = gmpIntDataContainer().allocateGmpIntData
+            (gIntDefaultNumberOfBits, false);
+        mpz_set_ui(mData->mInteger, value);
+    }
+}
+
 GmpInt::GmpInt(int value)
 {
     if(value == 0)
@@ -329,7 +344,16 @@ GmpInt& GmpInt::operator/=(long value)
 GmpInt& GmpInt::operator%=(const GmpInt& rhs)
 {
     copyIfShared();
-    mpz_mod(mData->mInteger, mData->mInteger, rhs.mData->mInteger);
+    if(operator<(0))
+    {
+        negate();
+        mpz_mod(mData->mInteger, mData->mInteger, rhs.mData->mInteger);
+        negate();
+    }
+    else
+    {
+        mpz_mod(mData->mInteger, mData->mInteger, rhs.mData->mInteger);
+    }
     return *this;
 }
 
@@ -337,7 +361,16 @@ GmpInt& GmpInt::operator%=(long value)
 {
     copyIfShared();
     if(value < 0) value = -value;
-    mpz_mod_ui(mData->mInteger, mData->mInteger, value);
+    if(operator<(0))
+    {
+        negate();
+        mpz_mod_ui(mData->mInteger, mData->mInteger, value);
+        negate();
+    }
+    else
+    {
+        mpz_mod_ui(mData->mInteger, mData->mInteger, value);
+    }
     return *this;
 }
 
@@ -477,7 +510,17 @@ GmpInt GmpInt::operator/(long value) const
 GmpInt GmpInt::operator%(const GmpInt& rhs) const
 {
     GmpInt retval(kNoInitialization);
-    mpz_mod(retval.mData->mInteger, mData->mInteger, rhs.mData->mInteger);
+    if(operator<(0))
+    {
+        mpz_neg(retval.mData->mInteger, mData->mInteger);
+        mpz_mod(retval.mData->mInteger,
+                retval.mData->mInteger, rhs.mData->mInteger);
+        retval.negate();
+    }
+    else
+    {
+        mpz_mod(retval.mData->mInteger, mData->mInteger, rhs.mData->mInteger);
+    }
     return retval;
 }
 
@@ -485,7 +528,16 @@ GmpInt GmpInt::operator%(long value) const
 {
     GmpInt retval(kNoInitialization);
     if(value < 0) value = -value;
-    mpz_mod_ui(retval.mData->mInteger, mData->mInteger, value);
+    if(operator<(0))
+    {
+        mpz_neg(retval.mData->mInteger, mData->mInteger);
+        mpz_mod_ui(retval.mData->mInteger, retval.mData->mInteger, value);
+        retval.negate();
+    }
+    else
+    {
+        mpz_mod_ui(retval.mData->mInteger, mData->mInteger, value);
+    }
     return retval;
 }
 
@@ -591,13 +643,21 @@ void GmpInt::parseValue(const char* value, char** endptr)
     if(value[endIndex] == '-') ++endIndex;
     if(!std::isdigit(value[endIndex]))
     { *endptr = const_cast<char*>(value); return; }
-    while(std::isdigit(value[++endIndex])) {}
+    if(value[endIndex] == '0' && value[endIndex+1] == 'x')
+    {
+        endIndex += 1;
+        while(std::isxdigit(value[++endIndex])) {}
+    }
+    else
+    {
+        while(std::isdigit(value[++endIndex])) {}
+    }
 
     str.reserve(endIndex - startIndex + 1);
     str.assign(value + startIndex, value + endIndex);
     str.push_back(0);
 
-    mpz_set_str(mData->mInteger, &str[0], 10);
+    mpz_set_str(mData->mInteger, &str[0], 0);
     *endptr = const_cast<char*>(value + endIndex);
 }
 

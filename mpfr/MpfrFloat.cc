@@ -36,7 +36,7 @@ class MpfrFloat::MpfrFloatDataContainer
 
  public:
     MpfrFloatDataContainer():
-        mDefaultPrecision(256), mFirstFreeNode(0),
+        mDefaultPrecision(256), mFirstFreeNode(0), mConst_0(0),
         mConst_pi(0), mConst_e(0), mConst_log2(0), mConst_epsilon(0)
     {}
 
@@ -148,15 +148,6 @@ class MpfrFloat::MpfrFloatDataContainer
 //===========================================================================
 // Shared data
 //===========================================================================
-namespace
-{
-    std::vector<char>& mpfrFloatString()
-    {
-        static std::vector<char> str;
-        return str;
-    }
-}
-
 // This should ensure that the container is not accessed by any MpfrFloat
 // instance before it has been constructed or after it has been destroyed
 // (which might otherwise happen if MpfrFloat is instantiated globally.)
@@ -268,13 +259,11 @@ MpfrFloat::MpfrFloat(int value)
     }
 }
 
-/*
-MpfrFloat::MpfrFloat(const char* value):
+MpfrFloat::MpfrFloat(const char* value, char** endptr):
     mData(mpfrFloatDataContainer().allocateMpfrFloatData(false))
 {
-    mpfr_set_str(mData->mFloat, value, 10, GMP_RNDN);
+    mpfr_strtofr(mData->mFloat, value, endptr, 0, GMP_RNDN);
 }
-*/
 
 MpfrFloat::~MpfrFloat()
 {
@@ -394,12 +383,14 @@ MpfrFloat& MpfrFloat::operator=(const char* value)
 
 void MpfrFloat::parseValue(const char* value)
 {
+    copyIfShared();
     mpfr_set_str(mData->mFloat, value, 10, GMP_RNDN);
 }
 
 void MpfrFloat::parseValue(const char* value, char** endptr)
 {
-    mpfr_strtofr(mData->mFloat, value, endptr, 10, GMP_RNDN);
+    copyIfShared();
+    mpfr_strtofr(mData->mFloat, value, endptr, 0, GMP_RNDN);
 }
 
 
@@ -419,10 +410,10 @@ const char* MpfrFloat::getAsString(unsigned precision) const
         "[mpfr_snprintf() is not supported in mpfr versions prior to 2.4]";
     return retval;
 #else
-    mpfrFloatString().resize(precision+30);
-    mpfr_snprintf(&(mpfrFloatString()[0]), precision+30, "%.*RNg", precision,
-                  mData->mFloat);
-    return &(mpfrFloatString()[0]);
+    static std::vector<char> str;
+    str.resize(precision+30);
+    mpfr_snprintf(&(str[0]), precision+30, "%.*RNg", precision, mData->mFloat);
+    return &(str[0]);
 #endif
 }
 
@@ -698,7 +689,7 @@ MpfrFloat operator%(double lhs, const MpfrFloat& rhs)
 
 std::ostream& operator<<(std::ostream& os, const MpfrFloat& value)
 {
-    os << value.getAsString(os.precision());
+    os << value.getAsString(unsigned(os.precision()));
     return os;
 }
 
@@ -793,8 +784,10 @@ void MpfrFloat::sincos(const MpfrFloat& value,
                        MpfrFloat& sin,
                        MpfrFloat& cos)
 {
-    mpfr_sin_cos(
-        sin.mData->mFloat, cos.mData->mFloat, value.mData->mFloat, GMP_RNDN);
+    sin.copyIfShared();
+    cos.copyIfShared();
+    mpfr_sin_cos
+        (sin.mData->mFloat, cos.mData->mFloat, value.mData->mFloat, GMP_RNDN);
 }
 
 MpfrFloat MpfrFloat::acos(const MpfrFloat& value)
@@ -958,7 +951,7 @@ MpfrFloat MpfrFloat::trunc(const MpfrFloat& value)
 MpfrFloat MpfrFloat::parseString(const char* str, char** endptr)
 {
     MpfrFloat retval(MpfrFloat::kNoInitialization);
-    mpfr_strtofr(retval.mData->mFloat, str, endptr, 10, GMP_RNDN);
+    mpfr_strtofr(retval.mData->mFloat, str, endptr, 0, GMP_RNDN);
     return retval;
 }
 

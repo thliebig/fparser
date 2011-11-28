@@ -14,6 +14,7 @@ class GmpInt
 
     GmpInt();
     GmpInt(long value);
+    GmpInt(unsigned long value);
     GmpInt(int value);
     GmpInt(double value);
     GmpInt(long double value);

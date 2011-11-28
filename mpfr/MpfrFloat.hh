@@ -21,13 +21,27 @@ class MpfrFloat
        mpfr data.) Thus multiple zero-initialized MpfrFloat instances won't
        consume significant amounts of memory (until they are modified to
        contain some other value, of course).
-     */
+
+       Important caveat:
+       ----------------
+       Note that initializing an MpfrFloat object with, for example, 0.1 will
+       suffer from accuracy problems (at least if the MpfrFloat object has
+       more mantissa bits than a double). The C++ double value 0.1 has only
+       53 mantissa bits, while the MpfrFloat object usually has more. If the
+       MpfrFloat object is initialized with a double, only that many bits of
+       accuracy will end up in the value of the MpfrFloat object. This can
+       create significant rounding/accuracy problems in some cases.
+       If you need to initialize the MpfrObject with some value (which cannot
+       be represented accurately by base-2 floating point numbers, eg. 0.1)
+       at full mantissa precision, you have to use parseValue("0.1") instead,
+       rather than relying on the constructor taking a double type value.
+    */
     MpfrFloat();
     MpfrFloat(double value);
     MpfrFloat(long double value);
     MpfrFloat(long value);
     MpfrFloat(int value);
-    //MpfrFloat(const char* value);
+    MpfrFloat(const char* value, char** endptr);
 
     ~MpfrFloat();
 
