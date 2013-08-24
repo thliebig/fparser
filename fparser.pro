@@ -7,8 +7,22 @@ TEMPLATE = lib
 TARGET = 
 DEPENDPATH += .
 INCLUDEPATH += .
-VERSION = 4.4.3
+VERSION = 4.5.1
 
 # Input
 HEADERS += fparser.hh fpconfig.hh fptypes.hh
-SOURCES += example.cc fparser.cc fpoptimizer.cc
+SOURCES += fparser.cc fpoptimizer.cc
+
+#
+# INSTALL
+#
+isEmpty(PREFIX) {
+    PREFIX = /usr/local
+}
+install.target = install
+install.commands = mkdir -p \"$$PREFIX/lib$$LIB_SUFFIX\"
+install.commands += && mkdir -p \"$$PREFIX/include\"
+install.commands += && cp -at \"$$PREFIX/include/\" fparser.hh
+unix:install.commands += && cp -at \"$$PREFIX/lib$$LIB_SUFFIX/\" libfparser.so*
+win32:install.commands += && cp -at \"$$PREFIX/lib$$LIB_SUFFIX/\" release/fparser4.dll
+QMAKE_EXTRA_TARGETS += install
