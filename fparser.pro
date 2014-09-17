@@ -22,7 +22,14 @@ isEmpty(PREFIX) {
 install.target = install
 install.commands = mkdir -p \"$$PREFIX/lib$$LIB_SUFFIX\"
 install.commands += && mkdir -p \"$$PREFIX/include\"
-install.commands += && cp -at \"$$PREFIX/include/\" fparser.hh
-unix:install.commands += && cp -at \"$$PREFIX/lib$$LIB_SUFFIX/\" libfparser.so*
+unix:!macx {
+  install.commands += && cp -at \"$$PREFIX/include/\" fparser.hh
+  install.commands += && cp -at \"$$PREFIX/lib$$LIB_SUFFIX/\" libfparser.so*
+}
 win32:install.commands += && cp -at \"$$PREFIX/lib$$LIB_SUFFIX/\" release/fparser4.dll
+macx {
+  install.commands += && cp fparser.hh  \"$$PREFIX/include/\"
+  install.commands += && cp libfparser*.dylib \"$$PREFIX/lib$$LIB_SUFFIX/\"
+}
+
 QMAKE_EXTRA_TARGETS += install
