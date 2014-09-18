@@ -1,6 +1,7 @@
 *.o
 .cproject
 .project
+.directory
 Makefile*
 *~
 *.so*
@@ -9,3 +10,9 @@ Thumbs.db
 qtc-*
 *.pro.user
 include
+
+#cmake generated files
+CMakeFiles/*
+cmake_install.cmake
+CMakeCache.txt
+install_manifest.txt
