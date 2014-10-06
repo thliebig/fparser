@@ -1,4 +1,7 @@
 
+# define build type
+SET( CMAKE_BUILD_TYPE Release )
+
 PROJECT(fparser CXX)
 
 cmake_minimum_required(VERSION 2.8)
