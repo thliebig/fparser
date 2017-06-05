@@ -4,7 +4,7 @@
 
 CONFIG -= qt
 TEMPLATE = lib
-TARGET = 
+TARGET = fparser
 DEPENDPATH += .
 INCLUDEPATH += .
 VERSION = 4.5.1
