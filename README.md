@@ -2,7 +2,7 @@
 
 Branch|[![Travis CI logo](TravisCI.png)](https://travis-ci.org)
 ---|---
-master|[![Build Status](https://travis-ci.org/richelbilderbeek/travis_qmake_gcc_cpp14.svg?branch=master)](https://travis-ci.org/richelbilderbeek/travis_qmake_gcc_cpp14)
+master|[![Build Status](https://travis-ci.org/richelbilderbeek/fparser.svg?branch=master)](https://travis-ci.org/richelbilderbeek/fparser)
 
 `fparser` is a C++ function Parser.
 
