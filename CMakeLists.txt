@@ -14,6 +14,10 @@ set(LIB_VERSION_STRING ${LIB_VERSION_MAJOR}.${LIB_VERSION_MINOR}.${LIB_VERSION_P
 
 set(VERSION "v${LIB_VERSION_STRING}")
 
+if(APPLE AND NOT CMAKE_INSTALL_NAME_DIR)
+  set(CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
+endif()
+
 #set(HEADERS fparser.hh fpconfig.hh fptypes.hh)
 set(SOURCES fparser.cc fpoptimizer.cc)
 
